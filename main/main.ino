@@ -1,5 +1,10 @@
 #include <LowPower.h>
 #include <SoftwareSerial.h>
+#include <dht.h>
+
+dht DHT;
+
+#define DHT11_PIN 3
  
 //SIM800 TX is connected to Arduino D8
 #define SIM800_TX_PIN 8
@@ -58,6 +63,28 @@ void loop()
     }
     else if(digitalRead(pin2) == HIGH && iterations == 10)
     {
+      Serial.print("DHT11, \t");
+      int chk = DHT.read11(DHT11_PIN);
+      switch (chk)
+      {
+        case DHTLIB_OK:  
+        Serial.print("OK,\t"); 
+        break;
+        case DHTLIB_ERROR_CHECKSUM: 
+        Serial.print("Checksum error,\t"); 
+        break;
+        case DHTLIB_ERROR_TIMEOUT: 
+        Serial.print("Time out error,\t"); 
+        break;
+        default: 
+        Serial.print("Unknown error,\t"); 
+        break;
+     }
+      Serial.println(DHT.temperature,1); 
+      if(DHT.temperature >= 25)
+      {
+        Serial.print("EMERGENCY: SENDING SMS...");
+      }
       iterations = 0;
     }
 }
